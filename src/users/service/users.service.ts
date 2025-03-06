@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service'; 
-import { createUserDto } from './DTO/createUser.dto';
+import { PrismaService } from '../../prisma/prisma.service'; 
+import { createUserDto } from '../DTO/createUser.dto';
 import * as bcrypt from 'bcrypt';
+import { UserEntity } from '../entity/user.entity';
 
 
 @Injectable()
@@ -9,66 +10,55 @@ export class UsersService {
 
     constructor(private readonly prisma : PrismaService){}
 
+
     /**
      * Finds a user by their email address.
-     * 
+     *
      * @param email - The email address of the user to find.
-     * @returns An object containing the user's id and email if found.
-     * @throws NotFoundException if no user with the given email is found.
+     * @returns {Promise<UserEntity>} A promise that resolves to a UserEntity object if the user is found.
+     * @throws {NotFoundException} if no user with the given email address is found.
      */
-    async findUserByEmail(email: string){
+    async findUserByEmail(email: string):Promise<UserEntity>{
         const user = await this.prisma.user.findUnique({where: {email}})
         if(!user){
             throw new NotFoundException(`User with ID ${email} Not Found`)
         }
-        return {
-            id : user.id,
-            email : user.email
-        }
+        return new UserEntity(user)
     }
 
     /**
      * Finds a user by their email for authentication purposes.
-     *
+     * 
      * @param email - The email of the user to find.
-     * @returns The user object if found.
-     * @throws NotFoundException if the user is not found.
+     * @returns {Promise<UserEntity>} A promise that resolves to a UserEntity if the user is found.
+     * @throws {NotFoundException} if the user is not found.
      */
-    async findUserForAuth(email: string){
+    async findUserForAuth(email: string): Promise<UserEntity>{
         const user = await this.prisma.user.findUnique({where: {email}})
         if(!user){
             throw new NotFoundException()
         }
-        return user;
+        return new UserEntity(user);
     }
+
 
     /**
      * Retrieves all users from the database.
-     * 
-     * @returns {Promise<Array<{id: number, email: string, createdAt: Date, updatedAt: Date}>>} 
-     * A promise that resolves to an array of user objects, each containing the user's id, email, 
-     * creation date, and last update date.
+     *
+     * @returns {Promise<UserEntity[]>} A promise that resolves to an array of UserEntity objects.
      */
-    async findAllUsers(){
-        return this.prisma.user.findMany({
-            select : {
-                id: true,
-                email : true,
-                createdAt : true,
-                updatedAt : true
-            }
-        })
+    async findAllUsers(): Promise<UserEntity[]>{
+        return await this.prisma.user.findMany({})
     }
+
 
     /**
      * Creates a new user with the provided details.
      * 
      * @param {createUserDto} user - The data transfer object containing user details.
-     * @returns {Promise<{ id: string, email: string }>} - An object containing the new user's ID and email.
-     * 
-     * @throws {Error} - Throws an error if user creation fails.
+     * @returns {Promise<UserEntity>} - A promise that resolves to the created user entity.
      */
-    async create(user: createUserDto){
+    async create(user: createUserDto): Promise<UserEntity>{
         const saltRound = 10
         const hashedPassword = await bcrypt.hash(user.password, saltRound)
         const newUser = await this.prisma.user.create({
@@ -78,24 +68,22 @@ export class UsersService {
             }
         });
 
-        return {
-            id: newUser.id,
-            email : newUser.email
-        }
+        return new UserEntity(newUser)
     }
+
     /**
      * Deletes a user by their unique identifier.
      * 
      * @param {string} id - The unique identifier of the user to be deleted.
-     * @returns {Promise<void>} A promise that resolves when the user is deleted.
-     * @throws {NotFoundException} If no user is found with the given id.
+     * @returns {Promise<UserEntity>} - A promise that resolves to the deleted user entity.
+     * @throws {NotFoundException} - If no user is found with the given identifier.
      */
-    async deleteUser(id:string){
+    async deleteUser(id:string) : Promise<UserEntity>{
             const user = await this.prisma.user.findUnique({where:{id}})
             if(!user){
                 throw new NotFoundException()
             }
-            return this.prisma.user.delete({where : {id}});
+            return await this.prisma.user.delete({where : {id}});
         
     }
 
