@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UsersService } from 'src/users/service//users.service';
 import { AuthInput } from './DTO/authInput.dto';
 import { AuthResult } from './DTO/authResult.dto';
 import { JwtService } from '@nestjs/jwt';

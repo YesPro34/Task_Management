@@ -63,8 +63,7 @@ export class TaskService {
     /**
      * Updates a task with the given ID using the provided update data.
      *
-     * @param {string} id - The ID of the task to update.
-     * @param {UpdateTaskDto} updateTask - The data to update the task with.
+     * @param {string} id - The ID of the task to update
      * @returns {Promise<TaskEntity>} - A promise that resolves to the updated task entity.
      * @throws {NotFoundException} - If no task with the given ID is found.
      */
@@ -90,5 +89,28 @@ export class TaskService {
             throw new NotFoundException("No Tasks with status ", status)
         }
           return tasks;
+    }
+
+    async getAllTasks(){
+        return await this.prisma.task.findMany({})
+    }
+
+    /**
+     * Updates a task with the given ID using the provided update data.
+     *
+     * @param {string} id - The ID of the task to update.
+     * @param {Partial<createTaskDto>} updateData - The data to update the task with.
+     * @returns {Promise<TaskEntity>} - A promise that resolves to the updated task entity.
+     * @throws {NotFoundException} - If no task with the given ID is found.
+     */
+    async updateTask(id: string, updateData: Partial<createTaskDto>): Promise<TaskEntity> {
+        const task = await this.prisma.task.findUnique({ where: { id } });
+        if (!task) {
+            throw new NotFoundException(`Task with ID ${id} Not Found`);
+        }
+        return await this.prisma.task.update({
+            where: { id },
+            data: updateData,
+        });
     }
 }

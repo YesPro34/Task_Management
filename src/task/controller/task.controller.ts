@@ -1,10 +1,10 @@
 import { Controller, Post, Get, Patch,Query, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
-import { TaskService } from './task.service';
-import { createTaskDto } from './dto/createTask.dto';
-import { UpdateTaskDto } from './dto/updateTask.dto';
-import { AuthGuard } from '../auth/guards/auth.guard';
-import { UserId } from '../decorators/user-id.decorater';
-import { FilterTasksDto } from './dto/filter-tasks.dto';
+import { TaskService } from '../service/task.service';
+import { createTaskDto } from '../dto/createTask.dto';
+import { UpdateTaskDto } from '../dto/updateTask.dto';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { UserId } from '../../decorators/user-id.decorater';
+import { FilterTasksDto } from '../dto/filter-tasks.dto';
 
 
 @Controller('tasks')
