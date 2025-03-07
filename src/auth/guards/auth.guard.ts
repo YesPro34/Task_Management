@@ -14,8 +14,7 @@ export class AuthGuard implements CanActivate{
         if(!token){
             throw new UnauthorizedException()
         }
-        try{
-            
+        try{ 
             const tokenPayload = await this.jwtService.verifyAsync(token)
             request.user = {
                 userId : tokenPayload.sub,
