@@ -27,4 +27,13 @@ export class AuthController {
     getUserInfo(@Request() request){
         return request.user;
     }
+    @Post('logout')
+    @ApiOperation({summary : "Log out the user"})
+    @ApiResponse({ status: 200, description: 'Log out successfully' })
+    @ApiResponse({ status: 404, description: 'Unauthorized' })
+    @UseGuards(AuthGuard)
+    logout(@Request() request){
+        return "Hello!"
+    }
+   
 }
