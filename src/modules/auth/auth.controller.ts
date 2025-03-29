@@ -33,7 +33,7 @@ export class AuthController {
     @ApiResponse({ status: 404, description: 'Unauthorized' })
     @UseGuards(AuthGuard)
     logout(@Request() request){
-        return "Hello!"
+        return "Logout successfully";
     }
    
 }
